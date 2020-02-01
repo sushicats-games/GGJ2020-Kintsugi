@@ -91,7 +91,7 @@ public class ObjectPicker : MonoBehaviour
             }
             else
             {
-                float moveZ = Input.mouseScrollDelta.y * .5f;
+                float moveZ = Input.mouseScrollDelta.y * .05f;
                 hitDistance += moveZ;
                 targetDesiredPosition += camera.transform.rotation * Vector3.forward * moveZ * amount;
                 targetDesiredPosition += camera.transform.rotation * mouseMovement * .5f * hitDistance * amount;

@@ -9,10 +9,9 @@ public class Shard : MonoBehaviour
     private Vector3 initialPosition;
     private Quaternion initialRotation;
 
-    public float delay = 1.0f;
-    public float positionThreshold = 0.5f;
-    public float rotationThreshold = 0.3f;
-
+    private float delay = 1.0f;
+    private float positionThreshold = 0.01f;
+    private float rotationThreshold = 30.0f;
     private float interpolating = -1.0f;
 
 
@@ -68,13 +67,9 @@ public class Shard : MonoBehaviour
         // diff += rotationDelta.w * rotationDelta.w;
         if (positionDiff <= positionThreshold)
         {
-            float rotationDiff = 0;
-            var a = initialRotation;
-            var b = transform.rotation;
-            rotationDiff += Math.Abs(a.x - b.x);
-            rotationDiff += Math.Abs(a.y - b.y);
-            rotationDiff += Math.Abs(a.z - b.z);
-            rotationDiff += Math.Abs(a.w - b.w);
+            float rotationDiff 
+                = Quaternion.Angle(initialRotation, transform.rotation);
+
             if (rotationDiff <= rotationThreshold)
             {
                 body.isKinematic = true;

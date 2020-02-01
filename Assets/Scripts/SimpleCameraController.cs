@@ -14,8 +14,10 @@ namespace UnityTemplateProjects
 
             private float minPitch;
             private float maxPitch;
+            private float minDistance;
+            private float maxDistance;
 
-            public void Init(Transform t, float distance, float minPitch, float maxPitch)
+            public void Init(Transform t, float distance, float minPitch, float maxPitch, float minDistance, float maxDistance)
             {
                 pitch = t.eulerAngles.x;
                 yaw = t.eulerAngles.y;
@@ -23,6 +25,8 @@ namespace UnityTemplateProjects
                 this.distance = distance;
                 this.minPitch = minPitch;
                 this.maxPitch = maxPitch;
+                this.minDistance = minDistance;
+                this.maxDistance = maxDistance;
                 EnforceConstraints();
             }
 
@@ -51,6 +55,7 @@ namespace UnityTemplateProjects
             private void EnforceConstraints()
             {
                 pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
+                distance = Mathf.Clamp(distance, minDistance, maxDistance);
             }
         }
         
@@ -60,6 +65,8 @@ namespace UnityTemplateProjects
         public float distance = 10.0f;
         public float minPitch = 10.0f;
         public float maxPitch = 80.0f;
+        public float minDistance = 4.0f;
+        public float maxDistance = 15.0f;
 
         [Header("Movement Settings")]
         [Tooltip("Exponential boost factor on translation, controllable by mouse wheel.")]
@@ -77,46 +84,22 @@ namespace UnityTemplateProjects
 
         [Tooltip("Whether or not to invert our Y axis for mouse input to rotation.")]
         public bool invertY = false;
+        internal bool dontMove;
 
         void OnEnable()
         {
-            m_TargetCameraState.Init(transform, distance, minPitch, maxPitch);
-            m_InterpolatingCameraState.Init(transform, distance, minPitch, maxPitch);
+            m_TargetCameraState.Init(transform, distance, minPitch, maxPitch, minDistance, maxDistance);
+            m_InterpolatingCameraState.Init(transform, distance, minPitch, maxPitch, minDistance, maxDistance);
         }
 
-        Vector3 GetInputTranslationDirection()
-        {
-            Vector3 direction = new Vector3();
-            if (Input.GetKey(KeyCode.W))
-            {
-                direction += Vector3.forward;
-            }
-            if (Input.GetKey(KeyCode.S))
-            {
-                direction += Vector3.back;
-            }
-            if (Input.GetKey(KeyCode.A))
-            {
-                direction += Vector3.left;
-            }
-            if (Input.GetKey(KeyCode.D))
-            {
-                direction += Vector3.right;
-            }
-            if (Input.GetKey(KeyCode.Q))
-            {
-                direction += Vector3.down;
-            }
-            if (Input.GetKey(KeyCode.E))
-            {
-                direction += Vector3.up;
-            }
-            return direction;
-        }
         
         void Update()
         {
             // Exit Sample  
+            if (dontMove)
+            {
+                return;
+            }
 
             if (Input.GetKey(KeyCode.Escape))
             {
@@ -148,21 +131,8 @@ namespace UnityTemplateProjects
                 m_TargetCameraState.yaw += mouseMovement.x * mouseSensitivityFactor;
                 m_TargetCameraState.pitch += mouseMovement.y * mouseSensitivityFactor;
             }
-            
-            // Translation
-            var translation = GetInputTranslationDirection() * Time.deltaTime;
 
-            // Speed up movement when shift key held
-            if (Input.GetKey(KeyCode.LeftShift))
-            {
-                translation *= 10.0f;
-            }
-            
-            // Modify movement by a boost factor (defined in Inspector and modified in play mode through the mouse scroll wheel)
-            boost += Input.mouseScrollDelta.y * 0.2f;
-            translation *= Mathf.Pow(2.0f, boost);
-
-            m_TargetCameraState.Translate(translation);
+            m_TargetCameraState.distance -= Input.mouseScrollDelta.y;
 
             // Framerate-independent interpolation
             // Calculate the lerp amount, such that we get 99% of the way to our target in the specified time

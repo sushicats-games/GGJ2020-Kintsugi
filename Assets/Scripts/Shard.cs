@@ -10,8 +10,10 @@ public class Shard : MonoBehaviour
     private Quaternion initialRotation;
 
     public float delay = 1.0f;
-    public float positionThreshold = 0.4f;
-    public float rotationThreshold = 0.2f;
+    public float positionThreshold = 0.5f;
+    public float rotationThreshold = 0.3f;
+
+    private float interpolating = -1.0f;
 
 
     // Start is called before the first frame update
@@ -25,20 +27,36 @@ public class Shard : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (delay > 0)
+        if (delay >= 0)
         {
+            // initial delay allowing the object to settle
             delay -= Time.deltaTime;
-            return; // do nothing until delay
+            return; 
         }
-        if (!body.isKinematic)
+        else if (!body.isKinematic)
         {
             CheckDifferenceAndSnapIfCloseEnough();
         }
-        else
+        else if (interpolating >= 0)
         {
-            transform.rotation = initialRotation;
-            transform.position = initialPosition;
-            body.velocity = Vector3.zero;
+            // shard smoothly snaps into it's origianl location
+            var amount = 1f - Mathf.Exp((Mathf.Log(1f - 0.99f) / .2f) * Time.deltaTime);
+            transform.rotation = Quaternion.Lerp(transform.rotation, initialRotation, amount);
+            transform.position = Vector3.Lerp(transform.position, initialPosition, amount);
+            interpolating -= Time.deltaTime;
+
+            if (interpolating <= 0.0)
+            {
+                // finished snapping into original location
+                body.isKinematic = true;
+                body.useGravity = false;
+                transform.rotation = initialRotation;
+                transform.position = initialPosition;
+                body.position = initialPosition;
+                body.rotation = initialRotation;
+                body.angularVelocity = Vector3.zero;
+                body.velocity = Vector3.zero;
+            }
         }
     }
 
@@ -60,12 +78,8 @@ public class Shard : MonoBehaviour
             if (rotationDiff <= rotationThreshold)
             {
                 body.isKinematic = true;
-                transform.rotation = initialRotation;
-                transform.position = initialPosition;
-                body.position = initialPosition;
-                body.rotation = initialRotation;
-                body.angularVelocity = Vector3.zero;
-                body.velocity = Vector3.zero;
+                body.useGravity = false;
+                interpolating = 1.0f;
             }
         }
     }

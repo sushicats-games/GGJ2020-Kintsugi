@@ -11,13 +11,14 @@ namespace UnityTemplateProjects
             public float pitch;
             public float roll;
             public float distance;
+            public Vector3 targetPosition;
 
             private float minPitch;
             private float maxPitch;
             private float minDistance;
             private float maxDistance;
 
-            public void Init(Transform t, float distance, float minPitch, float maxPitch, float minDistance, float maxDistance)
+            public void Init(Transform t, Vector3 targetPosition, float distance, float minPitch, float maxPitch, float minDistance, float maxDistance)
             {
                 pitch = t.eulerAngles.x;
                 yaw = t.eulerAngles.y;
@@ -27,29 +28,30 @@ namespace UnityTemplateProjects
                 this.maxPitch = maxPitch;
                 this.minDistance = minDistance;
                 this.maxDistance = maxDistance;
+                this.targetPosition = targetPosition;
                 EnforceConstraints();
             }
 
             public void Translate(Vector3 translation)
             {
                 Vector3 rotatedTranslation = Quaternion.Euler(pitch, yaw, roll) * translation;
-                EnforceConstraints();
             }
 
             public void LerpTowards(CameraState target, float positionLerpPct, float rotationLerpPct)
             {
+                target.EnforceConstraints();
                 yaw = Mathf.Lerp(yaw, target.yaw, rotationLerpPct);
                 pitch = Mathf.Lerp(pitch, target.pitch, rotationLerpPct);
                 roll = Mathf.Lerp(roll, target.roll, rotationLerpPct);
+                targetPosition = Vector3.Lerp(targetPosition, target.targetPosition, positionLerpPct);
 
                 distance = Mathf.Lerp(distance, target.distance, positionLerpPct);
-                EnforceConstraints();
             }
 
             public void UpdateTransform(Transform t)
             {
                 t.eulerAngles = new Vector3(pitch, yaw, roll);
-                t.position = t.rotation * Vector3.forward * -distance;
+                t.position = t.rotation * Vector3.forward * -distance + targetPosition;
             }
 
             private void EnforceConstraints()
@@ -65,8 +67,10 @@ namespace UnityTemplateProjects
         public float distance = 10.0f;
         public float minPitch = 10.0f;
         public float maxPitch = 80.0f;
-        public float minDistance = 4.0f;
-        public float maxDistance = 15.0f;
+        public float minDistance = 1.0f;
+        public float maxDistance = 4.0f;
+        public float distanceSteps = 0.1f;
+        public Vector3 targetPosition;
 
         [Header("Movement Settings")]
         [Tooltip("Exponential boost factor on translation, controllable by mouse wheel.")]
@@ -86,10 +90,12 @@ namespace UnityTemplateProjects
         public bool invertY = false;
         internal bool dontMove;
 
+        public Vector3 lookAtPosition;
+
         void OnEnable()
         {
-            m_TargetCameraState.Init(transform, distance, minPitch, maxPitch, minDistance, maxDistance);
-            m_InterpolatingCameraState.Init(transform, distance, minPitch, maxPitch, minDistance, maxDistance);
+            m_TargetCameraState.Init(transform, targetPosition, distance, minPitch, maxPitch, minDistance, maxDistance);
+            m_InterpolatingCameraState.Init(transform, targetPosition, distance, minPitch, maxPitch, minDistance, maxDistance);
         }
 
         
@@ -132,7 +138,8 @@ namespace UnityTemplateProjects
                 m_TargetCameraState.pitch += mouseMovement.y * mouseSensitivityFactor;
             }
 
-            m_TargetCameraState.distance -= Input.mouseScrollDelta.y;
+            m_TargetCameraState.distance -= Input.mouseScrollDelta.y * distanceSteps;
+            m_TargetCameraState.targetPosition = targetPosition;
 
             // Framerate-independent interpolation
             // Calculate the lerp amount, such that we get 99% of the way to our target in the specified time

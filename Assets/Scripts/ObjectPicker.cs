@@ -119,7 +119,7 @@ public class ObjectPicker : MonoBehaviour
             releaseObject = Input.GetMouseButtonUp(0) || (target != null && target.isKinematic),
             currentMousePosition = Input.mousePosition,
             fineControl = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift),
-            keyboardTranslation = GetKeyboardTranslation() * Time.deltaTime * 4.0f,
+            keyboardTranslation = GetKeyboardTranslation() * Time.deltaTime * 0.25f,
             keyboardRotation = GetKeyboardRotation() * Time.deltaTime,
         };
         return state;

@@ -28,15 +28,18 @@ public class ObjectPicker : MonoBehaviour
             target = null;
             if (TryGetObjectAtMouse(out var hit))
             {
-                target = hit.rigidbody;
-                hitDistance = hit.distance;
-                targetDesiredPosition = target.position;
-                desiredRotation = target.rotation;
-                isDragging = true;
-                cameraController.enabled = false;
+                if (!hit.rigidbody.isKinematic)
+                {
+                    target = hit.rigidbody;
+                    hitDistance = hit.distance;
+                    targetDesiredPosition = target.position;
+                    desiredRotation = target.rotation;
+                    isDragging = true;
+                    cameraController.enabled = false;
+                }
             }
         }
-        if (Input.GetMouseButtonUp(0)) // release left click
+        if (Input.GetMouseButtonUp(0) || (target != null && target.isKinematic)) // release left click
         {
             isDragging = false;
             target = null;

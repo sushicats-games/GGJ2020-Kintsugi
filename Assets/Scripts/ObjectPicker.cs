@@ -4,6 +4,8 @@ using UnityTemplateProjects;
 
 public class ObjectPicker : MonoBehaviour
 {
+    public AudioClip OnPick;
+    public AudioClip OnRelease;
     private SimpleCameraController cameraController;
     new Camera camera;
     private Rigidbody target;
@@ -57,6 +59,7 @@ public class ObjectPicker : MonoBehaviour
                     targetDesiredPosition = target.position;
                     desiredRotation = target.rotation;
                     isDragging = true;
+                    target.GetComponent<AudioSource>().PlayOneShot(OnPick);
                 }
             }
         }
@@ -67,6 +70,10 @@ public class ObjectPicker : MonoBehaviour
             Cursor.visible = true;
             Cursor.lockState = CursorLockMode.None;
             isDragging = false;
+            if(target != null)
+            {
+                target.GetComponent<AudioSource>().PlayOneShot(OnRelease);
+            }
             target = null;
         }
         if (target != null)

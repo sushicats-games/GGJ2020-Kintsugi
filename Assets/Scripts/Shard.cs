@@ -5,7 +5,9 @@ using UnityEngine;
 
 public class Shard : MonoBehaviour
 {
+    public AudioClip[] OnSnap;
     private Rigidbody body;
+    private AudioSource audioSource;
     private Vector3 initialPosition;
     private Quaternion initialRotation;
 
@@ -14,10 +16,13 @@ public class Shard : MonoBehaviour
     private float rotationThreshold = 30.0f;
     private float interpolating = -1.0f;
 
+    private static int onSnapClipIndex = 0;
+
 
     // Start is called before the first frame update
     void Start()
     {
+        audioSource = gameObject.AddComponent<AudioSource>();
         initialPosition = transform.position;
         initialRotation = transform.rotation;
         body = GetComponent<Rigidbody>();
@@ -72,10 +77,17 @@ public class Shard : MonoBehaviour
 
             if (rotationDiff <= rotationThreshold)
             {
+                PlaySnapSFX();
                 body.isKinematic = true;
                 body.useGravity = false;
                 interpolating = 1.0f;
             }
         }
+    }
+
+    private void PlaySnapSFX()
+    {
+        audioSource.PlayOneShot(OnSnap[onSnapClipIndex]);
+        onSnapClipIndex = (onSnapClipIndex + 1) % OnSnap.Length;
     }
 }

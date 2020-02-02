@@ -1582,13 +1582,13 @@ MonoBehaviour:
   dithering: 1
   stopNaNs: 0
   physicalParameters:
-    m_Iso: 200
+    m_Iso: 800
     m_ShutterSpeed: 0.005
-    m_Aperture: 16
-    m_BladeCount: 5
-    m_Curvature: {x: 2, y: 11}
-    m_BarrelClipping: 0.25
-    m_Anamorphism: 0
+    m_Aperture: 10.5
+    m_BladeCount: 6
+    m_Curvature: {x: 7.172414, y: 16.172413}
+    m_BarrelClipping: 0
+    m_Anamorphism: -1
   flipYMode: 0
   fullscreenPassthrough: 0
   allowDynamicResolution: 0
@@ -1679,9 +1679,9 @@ Camera:
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
-  m_SensorSize: {x: 36, y: 24}
-  m_LensShift: {x: 0, y: 0}
-  m_FocalLength: 50
+  m_SensorSize: {x: 10.26, y: 7.49}
+  m_LensShift: {x: -5.38, y: 3.41}
+  m_FocalLength: 0.1
   m_NormalizedViewPortRect:
     serializedVersion: 2
     x: 0
@@ -1715,13 +1715,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1770869780}
-  m_LocalRotation: {x: 0.28850186, y: 0.0005687674, z: -0.0006748205, w: 0.95747894}
-  m_LocalPosition: {x: -0.459, y: 1.234, z: -0.601}
+  m_LocalRotation: {x: 0.18827605, y: 0.3476059, z: -0.07213226, w: 0.91570693}
+  m_LocalPosition: {x: -0.92, y: 1.08, z: -0.601}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 33.537003, y: 0.048, z: -0.066}
+  m_LocalEulerAnglesHint: {x: 23.263, y: 41.558002, z: -0.076000005}
 --- !u!114 &1770869785
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1738,7 +1738,7 @@ MonoBehaviour:
   minPitch: 10
   maxPitch: 80
   minDistance: 0.5
-  maxDistance: 2
+  maxDistance: 1
   distanceSteps: 0.05
   targetPosition: {x: -0.385, y: 0.802, z: -0.02}
   boost: 3.5
